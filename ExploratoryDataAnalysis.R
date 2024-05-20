@@ -44,3 +44,18 @@ print(medians)
 modes <- sapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], function(x) names(which.max(table(x))))
 print("Mode:")
 print(modes)
+
+# Measures of Distribution
+print("\nMeasures of Distribution:")
+# Standard Deviation
+sds <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, sd, na.rm = TRUE)
+print("Standard Deviation:")
+print(sds)
+# Range
+ranges <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, function(x) diff(range(x, na.rm = TRUE)))
+print("Range:")
+print(ranges)
+# Interquartile Range (IQR)
+iqrs <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, IQR, na.rm = TRUE)
+print("Interquartile Range (IQR):")
+print(iqrs)
