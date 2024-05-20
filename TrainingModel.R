@@ -59,3 +59,7 @@ print(glmnet_model)
 glm_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = train_control)
 print("GLM Model:")
 print(glm_model)
+
+# Compare model performance using resamples
+resamps <- resamples(list(Random_Forest = rf_model, GLMNET = glmnet_model, GLM = glm_model))
+summary(resamps)
