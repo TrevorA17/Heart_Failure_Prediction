@@ -13,7 +13,7 @@ saveRDS(rf_model, file = "./models/heart_failure_rf_model.rds")
 # Load the saved Random Forest model
 loaded_heart_failure_rf_model <- readRDS("./models/heart_failure_rf_model.rds")
 
-# Sample new data (replace with actual new data)
+# Sample new data 
 new_heart_failure_data <- data.frame(
   age = c(55, 65, 75),  
   anaemia = factor(c(0, 1, 0)),  
