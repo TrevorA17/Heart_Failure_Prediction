@@ -29,3 +29,18 @@ View(heart_failure_data)
 frequency <- sapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], table)
 print("Measures of Frequency:")
 print(frequency)
+
+# Measures of Central Tendency
+print("\nMeasures of Central Tendency:")
+# Mean
+means <- colMeans(heart_failure_data[, sapply(heart_failure_data, is.numeric)], na.rm = TRUE)
+print("Mean:")
+print(means)
+# Median
+medians <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, median, na.rm = TRUE)
+print("Median:")
+print(medians)
+# Mode (for factor variables)
+modes <- sapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], function(x) names(which.max(table(x))))
+print("Mode:")
+print(modes)
