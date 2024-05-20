@@ -37,4 +37,25 @@ print(cv_model)
 # Load required libraries
 library(caret)
 library(randomForest)
-library(xgboost)
+library(glmnet)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define training control
+train_control <- trainControl(method = "cv", number = 5)
+
+# Train Random Forest model
+rf_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "rf", trControl = train_control)
+print("Random Forest Model:")
+print(rf_model)
+
+# Train glmnet model
+glmnet_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glmnet", trControl = train_control)
+print("GLMNET Model:")
+print(glmnet_model)
+
+# Train Generalized Linear Model (GLM)
+glm_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = train_control)
+print("GLM Model:")
+print(glm_model)
