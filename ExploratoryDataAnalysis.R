@@ -59,3 +59,10 @@ print(ranges)
 iqrs <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, IQR, na.rm = TRUE)
 print("Interquartile Range (IQR):")
 print(iqrs)
+
+# Measures of Relationship
+print("\nMeasures of Relationship:")
+# Correlation Matrix for numeric variables
+correlation_matrix <- cor(heart_failure_data[, sapply(heart_failure_data, is.numeric)], use = "complete.obs")
+print("Correlation Matrix:")
+print(correlation_matrix)
