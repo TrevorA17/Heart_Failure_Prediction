@@ -23,3 +23,8 @@ head(heart_failure_data)
 
 # View the dataset in a separate viewer window
 View(heart_failure_data)
+
+# Check for missing values
+missing_values <- colSums(is.na(heart_failure_data))
+print("Presence of Missing Values:")
+print(missing_values)
