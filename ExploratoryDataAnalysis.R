@@ -66,3 +66,16 @@ print("\nMeasures of Relationship:")
 correlation_matrix <- cor(heart_failure_data[, sapply(heart_failure_data, is.numeric)], use = "complete.obs")
 print("Correlation Matrix:")
 print(correlation_matrix)
+
+# Perform ANOVA for numeric variables across different factors
+anova_results <- lapply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], function(var) {
+  anova_result <- lapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], function(factor_var) {
+    anova_result <- anova(lm(var ~ factor_var, data = heart_failure_data))
+    return(anova_result)
+  })
+  return(anova_result)
+})
+
+# Print ANOVA results
+print("ANOVA Results:")
+print(anova_results)
