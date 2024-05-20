@@ -34,12 +34,7 @@ cv_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", tr
 print("Basic Cross-validation:")
 print(cv_model)
 
-# Repeated cross-validation
-repeated_cv_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = trainControl(method = "repeatedcv", number = 5, repeats = 3))
-print("Repeated Cross-validation:")
-print(repeated_cv_model)
-
-# Leave-one-out cross-validation (LOOCV)
-loocv_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = trainControl(method = "LOOCV"))
-print("LOOCV:")
-print(loocv_model)
+# Load required libraries
+library(caret)
+library(randomForest)
+library(xgboost)
