@@ -79,3 +79,35 @@ anova_results <- lapply(heart_failure_data[, sapply(heart_failure_data, is.numer
 # Print ANOVA results
 print("ANOVA Results:")
 print(anova_results)
+
+# Load required libraries
+library(ggplot2)
+
+# Univariate Plots
+# Histogram of age
+ggplot(heart_failure_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Frequency")
+
+# Bar plot of anaemia
+ggplot(heart_failure_data, aes(x = anaemia)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Frequency of Anaemia", x = "Anaemia", y = "Frequency") +
+  scale_x_discrete(labels = c("No", "Yes"))
+
+# Multivariate Plot
+# Scatter plot of age vs. serum_creatinine colored by DEATH_EVENT
+ggplot(heart_failure_data, aes(x = age, y = serum_creatinine, color = DEATH_EVENT)) +
+  geom_point() +
+  labs(title = "Age vs. Serum Creatinine by Death Event", x = "Age", y = "Serum Creatinine", color = "Death Event") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme(legend.title = element_blank())
+
+# Box plot of ejection_fraction by diabetes
+ggplot(heart_failure_data, aes(x = diabetes, y = ejection_fraction, fill = diabetes)) +
+  geom_boxplot() +
+  labs(title = "Ejection Fraction by Diabetes Status", x = "Diabetes", y = "Ejection Fraction", fill = "Diabetes")
+
+# Pairwise scatter plot of numeric variables
+pairs(~ age + creatinine_phosphokinase + ejection_fraction + platelets + serum_creatinine + serum_sodium, data = heart_failure_data)
+
