@@ -76,3 +76,217 @@ head(heart_failure_data)
 View(heart_failure_data)
 ```
 
+## Measures of Frequency
+```{r MOF}
+# Measures of Frequency
+# Count of unique values in each factor variable
+frequency <- sapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], table)
+print("Measures of Frequency:")
+print(frequency)
+```
+
+## Measures of Central Tendency
+```{r MOCT}
+# Measures of Central Tendency
+print("\nMeasures of Central Tendency:")
+# Mean
+means <- colMeans(heart_failure_data[, sapply(heart_failure_data, is.numeric)], na.rm = TRUE)
+print("Mean:")
+print(means)
+# Median
+medians <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, median, na.rm = TRUE)
+print("Median:")
+print(medians)
+# Mode (for factor variables)
+modes <- sapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], function(x) names(which.max(table(x))))
+print("Mode:")
+print(modes)
+```
+
+## Measures of Distribution
+```{r MOD}
+# Measures of Distribution
+print("\nMeasures of Distribution:")
+# Standard Deviation
+sds <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, sd, na.rm = TRUE)
+print("Standard Deviation:")
+print(sds)
+# Range
+ranges <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, function(x) diff(range(x, na.rm = TRUE)))
+print("Range:")
+print(ranges)
+# Interquartile Range (IQR)
+iqrs <- apply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], 2, IQR, na.rm = TRUE)
+print("Interquartile Range (IQR):")
+print(iqrs)
+```
+
+## Measures of Relationship
+```{r MOR}
+# Measures of Relationship
+print("\nMeasures of Relationship:")
+# Correlation Matrix for numeric variables
+correlation_matrix <- cor(heart_failure_data[, sapply(heart_failure_data, is.numeric)], use = "complete.obs")
+print("Correlation Matrix:")
+print(correlation_matrix)
+```
+
+## ANOVA
+```{r ANOVA}
+# Perform ANOVA for numeric variables across different factors
+anova_results <- lapply(heart_failure_data[, sapply(heart_failure_data, is.numeric)], function(var) {
+  anova_result <- lapply(heart_failure_data[, sapply(heart_failure_data, is.factor)], function(factor_var) {
+    anova_result <- anova(lm(var ~ factor_var, data = heart_failure_data))
+    return(anova_result)
+  })
+  return(anova_result)
+})
+
+# Print ANOVA results
+print("ANOVA Results:")
+print(anova_results)
+```
+
+## Plots
+```{r Plots}
+# Load required libraries
+library(ggplot2)
+
+# Univariate Plots
+# Histogram of age
+ggplot(heart_failure_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Age", x = "Age", y = "Frequency")
+
+# Bar plot of anaemia
+ggplot(heart_failure_data, aes(x = anaemia)) +
+  geom_bar(fill = "lightgreen") +
+  labs(title = "Frequency of Anaemia", x = "Anaemia", y = "Frequency") +
+  scale_x_discrete(labels = c("No", "Yes"))
+
+# Multivariate Plot
+# Scatter plot of age vs. serum_creatinine colored by DEATH_EVENT
+ggplot(heart_failure_data, aes(x = age, y = serum_creatinine, color = DEATH_EVENT)) +
+  geom_point() +
+  labs(title = "Age vs. Serum Creatinine by Death Event", x = "Age", y = "Serum Creatinine", color = "Death Event") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme(legend.title = element_blank())
+
+# Box plot of ejection_fraction by diabetes
+ggplot(heart_failure_data, aes(x = diabetes, y = ejection_fraction, fill = diabetes)) +
+  geom_boxplot() +
+  labs(title = "Ejection Fraction by Diabetes Status", x = "Diabetes", y = "Ejection Fraction", fill = "Diabetes")
+
+# Pairwise scatter plot of numeric variables
+pairs(~ age + creatinine_phosphokinase + ejection_fraction + platelets + serum_creatinine + serum_sodium, data = heart_failure_data)
+
+```
+
+# Preprocessing and Data Transformation
+## Missing Values
+```{r missing values}
+# Check for missing values
+missing_values <- colSums(is.na(heart_failure_data))
+print("Presence of Missing Values:")
+print(missing_values)
+```
+
+# Training Model
+## Data Splitting
+```{r Data Splitting}
+## Load required package
+library(caret)
+
+# Data Splitting
+set.seed(123)  # For reproducibility
+train_index <- createDataPartition(heart_failure_data$DEATH_EVENT, p = 0.7, list = FALSE)
+train_data <- heart_failure_data[train_index, ]
+test_data <- heart_failure_data[-train_index, ]
+
+# Print the dimensions of the training and testing sets
+cat("Training set dimensions:", dim(train_data), "\n")
+cat("Testing set dimensions:", dim(test_data), "\n")
+```
+
+## Bootstrapping
+```{r Bootstrapping}
+# Bootstrapping
+boot_data <- createDataPartition(1:nrow(heart_failure_data), p = 0.8, list = FALSE)
+bootstrapped_samples <- heart_failure_data[boot_data, ]
+```
+
+## Cross-validation
+```{r Cross-validation}
+# Cross-validation
+# Basic cross-validation
+cv_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = trainControl(method = "cv"))
+print("Basic Cross-validation:")
+print(cv_model)
+```
+
+## Training Different Models
+```{r Training Different Models}
+# Load required libraries
+library(caret)
+library(randomForest)
+library(glmnet)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Define training control
+train_control <- trainControl(method = "cv", number = 5)
+
+# Train Random Forest model
+rf_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "rf", trControl = train_control)
+print("Random Forest Model:")
+print(rf_model)
+
+# Train glmnet model
+glmnet_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glmnet", trControl = train_control)
+print("GLMNET Model:")
+print(glmnet_model)
+
+# Train Generalized Linear Model (GLM)
+glm_model <- train(DEATH_EVENT ~ ., data = heart_failure_data, method = "glm", trControl = train_control)
+print("GLM Model:")
+print(glm_model)
+```
+
+## Compare performance
+```{r Compare Performance}
+# Compare model performance using resamples
+resamps <- resamples(list(Random_Forest = rf_model, GLMNET = glmnet_model, GLM = glm_model))
+summary(resamps)
+```
+
+## Saving Model
+```{r Saving Model}
+# Load the saved Random Forest model
+loaded_heart_failure_rf_model <- readRDS("./models/heart_failure_rf_model.rds")
+
+# Sample new data 
+new_heart_failure_data <- data.frame(
+  age = c(55, 65, 75),  
+  anaemia = factor(c(0, 1, 0)),  
+  creatinine_phosphokinase = c(7861, 146, 582),  
+  diabetes = factor(c(0, 0, 0)),  
+  ejection_fraction = c(38, 20, 20),  
+  high_blood_pressure = factor(c(0, 0, 1)),  
+  platelets = c(263358.03, 162000, 265000),  
+  serum_creatinine = c(1.1, 1.3, 1.9),  
+  serum_sodium = c(136, 129, 130),  
+  sex = factor(c(1, 1, 1)),  
+  smoking = factor(c(0, 1, 0)),  
+  time = c(6, 7, 4),  
+  DEATH_EVENT = factor(c(1, 1, 1))
+)
+
+# Use the loaded model to make predictions for new data
+predictions <- predict(loaded_heart_failure_rf_model, new_heart_failure_data)
+
+# Print predictions
+print(predictions)
+
+```
+
